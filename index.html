@@ -19,43 +19,62 @@
       text-align: center;
     }
 
-    /* ✅ Loading screen styles */
+    /* ✅ Loading Screen */
     #loading-screen {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: url('loading-bg.jpg') no-repeat center center/cover;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
       align-items: center;
-      color: white;
+      justify-content: center;
+      flex-direction: column;
       z-index: 9999;
+      color: white;
+      overflow: hidden;
     }
-    #spinner {
-      border: 6px solid rgba(255,255,255,0.3);
-      border-top: 6px solid #ffffff;
+
+    #loading-screen .loading-bg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .loading-overlay {
+      text-align: center;
+    }
+
+    .spinner {
+      border: 6px solid rgba(255, 255, 255, 0.3);
+      border-top: 6px solid #ffcc00;
       border-radius: 50%;
       width: 60px;
       height: 60px;
       animation: spin 1s linear infinite;
-      margin-bottom: 20px;
+      margin: 20px auto;
     }
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
     #loading-text {
       font-size: 1.2rem;
-      margin-bottom: 40px;
+      margin-top: 10px;
     }
-    #loading-footer {
-      position: absolute;
-      bottom: 20px;
+
+    .dev-name {
+      margin-top: 40px;
       font-size: 0.9rem;
       opacity: 0.8;
     }
 
+    /* ✅ Main App Styling */
     header {
       background: #004aad;
       color: white;
@@ -157,49 +176,55 @@
 <body>
   <!-- ✅ Loading Screen -->
   <div id="loading-screen">
-    <div id="spinner"></div>
-    <div id="loading-text">Loading Lotto Results...</div>
-    <div id="loading-footer">By Reven</div>
+    <img src="loading-bg.jpg" alt="Background" class="loading-bg">
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+      <p id="loading-text">Loading Lotto Results...</p>
+      <p class="dev-name">By Reven</p>
+    </div>
   </div>
 
-  <header>
-    <img src="pcsologo.png" alt="PCSO Logo">
-    <h1>PCSO Lotto Results</h1>
-  </header>
+  <!-- ✅ Main Content -->
+  <div id="main-content" style="display:none;">
+    <header>
+      <img src="pcsologo.png" alt="PCSO Logo">
+      <h1>PCSO Lotto Results</h1>
+    </header>
 
-  <div class="container">
-    <div class="date-picker">
-      <label for="date">🗓️ Select Date:</label>
-      <input type="date" id="date" />
-    </div>
-
-    <h2>STL Bukidnon Results</h2>
-    <div class="results" id="stl-results">
-      <div class="result-item" id="stl-1030"><strong>10:30 AM</strong> → Pending...</div>
-      <div class="result-item" id="stl-3pm"><strong>3:00 PM</strong> → Pending...</div>
-      <div class="result-item" id="stl-8pm"><strong>8:00 PM</strong> → Pending...</div>
-    </div>
-
-    <h2>3D National Results</h2>
-    <div class="results" id="3d-results">
-      <div class="result-item" id="3d-2pm"><strong>2:00 PM</strong> → Pending...</div>
-      <div class="result-item" id="3d-5pm"><strong>5:00 PM</strong> → Pending...</div>
-      <div class="result-item" id="3d-9pm"><strong>9:00 PM</strong> → Pending...</div>
-    </div>
-
-    <div class="generator">
-      <h2>🎰 Lucky 3 Digit Generator</h2>
-      <div class="number-box">
-        <div class="digit" id="digit1">-</div>
-        <div class="digit" id="digit2">-</div>
-        <div class="digit" id="digit3">-</div>
+    <div class="container">
+      <div class="date-picker">
+        <label for="date">🗓️ Select Date:</label>
+        <input type="date" id="date" />
       </div>
-      <button onclick="generateLuckyNumbers()">Generate</button>
 
-      <p class="note">
-        Note: <i>The numbers generated here are purely random and are not official results from the PCSO or any of its agencies. 
-        This feature is for entertainment purposes only and does not guarantee any winning combinations.</i>
-      </p>
+      <h2>STL Bukidnon Results</h2>
+      <div class="results" id="stl-results">
+        <div class="result-item" id="stl-1030"><strong>10:30 AM</strong> → Pending...</div>
+        <div class="result-item" id="stl-3pm"><strong>3:00 PM</strong> → Pending...</div>
+        <div class="result-item" id="stl-8pm"><strong>8:00 PM</strong> → Pending...</div>
+      </div>
+
+      <h2>3D National Results</h2>
+      <div class="results" id="3d-results">
+        <div class="result-item" id="3d-2pm"><strong>2:00 PM</strong> → Pending...</div>
+        <div class="result-item" id="3d-5pm"><strong>5:00 PM</strong> → Pending...</div>
+        <div class="result-item" id="3d-9pm"><strong>9:00 PM</strong> → Pending...</div>
+      </div>
+
+      <div class="generator">
+        <h2>🎰 Lucky 3 Digit Generator</h2>
+        <div class="number-box">
+          <div class="digit" id="digit1">-</div>
+          <div class="digit" id="digit2">-</div>
+          <div class="digit" id="digit3">-</div>
+        </div>
+        <button onclick="generateLuckyNumbers()">Generate</button>
+
+        <p class="note">
+          Note: <i>The numbers generated here are purely random and are not official results from the PCSO or any of its agencies. 
+          This feature is for entertainment purposes only and does not guarantee any winning combinations.</i>
+        </p>
+      </div>
     </div>
   </div>
 
@@ -262,12 +287,8 @@
           document.getElementById(id).innerHTML = resultsMap[id];
         });
 
-        // ✅ Hide loading screen after data loads
-        document.getElementById("loading-screen").style.display = "none";
-
       } catch (err) {
         console.error("Error fetching results:", err);
-        document.getElementById("loading-screen").style.display = "none";
       }
     }
 
@@ -285,6 +306,17 @@
         .then(() => console.log("Service Worker registered"))
         .catch(err => console.error("SW registration failed:", err));
     }
+
+    // ✅ Hide loading screen after page loads
+    window.addEventListener("load", () => {
+      const loadingScreen = document.getElementById("loading-screen");
+      const mainContent = document.getElementById("main-content");
+
+      setTimeout(() => {
+        loadingScreen.style.display = "none";
+        mainContent.style.display = "block";
+      }, 1200);
+    });
   </script>
 </body>
 </html>
