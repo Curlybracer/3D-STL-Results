@@ -1,50 +1,51 @@
-const CACHE_NAME = "lotto-app-v1"; // palitan ang version number kapag may major changes
-const urlsToCache = [
-  "/3D-STL-Results/",         // 🔹 Root (palitan depende sa repo name mo)
-  "/3D-STL-Results/index.html",
-  "/3D-STL-Results/manifest.json",
-  "/3D-STL-Results/icon.png",
-  "/3D-STL-Results/pcsologo.png"
+const CACHE_NAME = "lotto-app-v3"; 
+const ASSETS_TO_CACHE = [
+  "/", 
+  "/index.html",
+  "/manifest.json",
+  "/Appicon.png",
+  "/pcsologo.png",
+  "/loading-bg.jpg",
+  "/results.json" // ✅ para sa offline results
 ];
 
-// Install event - cache app shell
-self.addEventListener("install", event => {
+// Install event - cache files
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(urlsToCache);
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
     })
   );
-  self.skipWaiting(); // agad activate kahit may luma
 });
 
-// Activate event - delete old caches
-self.addEventListener("activate", event => {
+// Activate event - clear old cache
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map(cache => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
-        })
+        keys
+          .filter((key) => key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
       );
     })
   );
-  self.clients.claim(); // agad gamitin yung bagong SW
 });
 
-// Fetch event - online first strategy
-self.addEventListener("fetch", event => {
+// Fetch event - serve cached files if available
+self.addEventListener("fetch", (event) => {
   event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        // kung online, i-update ang cache
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, clone);
-        });
+    caches.match(event.request).then((cachedResponse) => {
+      // Gamitin yung cached JSON kung offline
+      return cachedResponse || fetch(event.request).then((response) => {
+        // Optional: i-update yung cache ng results.json kapag online
+        if (event.request.url.includes("results.json")) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
         return response;
-      })
-      .catch(() => caches.match(event.request)) // kung offline, serve from cache
+      });
+    })
   );
 });
