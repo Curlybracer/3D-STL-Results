@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+  <!-- PWA manifest and icons -->
   <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#004aad">
-<link rel="apple-touch-icon" href="icon.png">
-  
+  <meta name="theme-color" content="#004aad">
+  <link rel="apple-touch-icon" href="Appicon.png">
+  <link rel="icon" type="image/png" href="Appicon.png">
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lotto Results Bukidnon</title>
@@ -159,7 +160,7 @@
   </div>
 
   <script>
-    const JSON_URL = "https://curlybracer.github.io/3D-STL-Results/results.json"; // 👉 palitan kung iba yung filename mo
+    const JSON_URL = "https://curlybracer.github.io/3D-STL-Results/results.json";
 
     // ✅ Auto-set today's date
     const dateInput = document.getElementById("date");
@@ -191,7 +192,6 @@
         const response = await fetch(`${JSON_URL}?t=${new Date().getTime()}`);
         const data = await response.json();
 
-        // Default values
         const resultsMap = {
           "stl-1030": "<strong>10:30 AM</strong> → Pending...",
           "stl-3pm": "<strong>3:00 PM</strong> → Pending...",
@@ -201,7 +201,6 @@
           "3d-9pm": "<strong>9:00 PM</strong> → Pending..."
         };
 
-        // ✅ Check if may data sa date na yan
         if (data[date]) {
           const stl = data[date]["STL"] || {};
           const threeD = data[date]["3D"] || {};
@@ -215,7 +214,6 @@
           if (threeD["9:00 PM"]) resultsMap["3d-9pm"] = `<strong>9:00 PM</strong> → ${threeD["9:00 PM"]}`;
         }
 
-        // Apply results
         Object.keys(resultsMap).forEach(id => {
           document.getElementById(id).innerHTML = resultsMap[id];
         });
@@ -233,13 +231,12 @@
       fetchResults(this.value);
     });
 
-// Register service worker
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js")
-    .then(() => console.log("Service Worker registered"))
-    .catch(err => console.error("SW registration failed:", err));
-                     }
-    
+    // ✅ Register service worker
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js")
+        .then(() => console.log("Service Worker registered"))
+        .catch(err => console.error("SW registration failed:", err));
+    }
   </script>
 </body>
-</html>
+  </html>
