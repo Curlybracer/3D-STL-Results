@@ -19,6 +19,43 @@
       text-align: center;
     }
 
+    /* ✅ Loading screen styles */
+    #loading-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: url('loading-bg.jpg') no-repeat center center/cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      z-index: 9999;
+    }
+    #spinner {
+      border: 6px solid rgba(255,255,255,0.3);
+      border-top: 6px solid #ffffff;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #loading-text {
+      font-size: 1.2rem;
+      margin-bottom: 40px;
+    }
+    #loading-footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
     header {
       background: #004aad;
       color: white;
@@ -118,6 +155,13 @@
   </style>
 </head>
 <body>
+  <!-- ✅ Loading Screen -->
+  <div id="loading-screen">
+    <div id="spinner"></div>
+    <div id="loading-text">Loading Lotto Results...</div>
+    <div id="loading-footer">By Reven</div>
+  </div>
+
   <header>
     <img src="pcsologo.png" alt="PCSO Logo">
     <h1>PCSO Lotto Results</h1>
@@ -218,8 +262,12 @@
           document.getElementById(id).innerHTML = resultsMap[id];
         });
 
+        // ✅ Hide loading screen after data loads
+        document.getElementById("loading-screen").style.display = "none";
+
       } catch (err) {
         console.error("Error fetching results:", err);
+        document.getElementById("loading-screen").style.display = "none";
       }
     }
 
@@ -239,4 +287,4 @@
     }
   </script>
 </body>
-  </html>
+</html>
