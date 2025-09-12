@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lotto Results Bukidnon</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f50000;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    header {
+      background: #004aad;
+      color: white;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    header img {
+      width: 50px;
+      height: 50px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #004aad;
+    }
+
+    .results {
+      text-align: left;
+      margin: 15px 0;
+    }
+
+    .result-item {
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .result-item strong {
+      color: #000;
+    }
+
+    .generator {
+      margin-top: 20px;
+    }
+
+    .number-box {
+      font-size: 2rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 15px 0;
+    }
+
+    .digit {
+      width: 50px;
+      height: 50px;
+      background: #004aad;
+      color: white;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #ff4d6d;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #d93654;
+    }
+
+    .note {
+      margin-top: 15px;
+      font-size: 0.9rem;
+      color: #444;
+      text-align: justify;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="pcsologo.png" alt="PCSO Logo">
+    <h1>PCSO Lotto Results</h1>
+  </header>
+
+  <div class="container">
+    <div class="date-picker">
+      <label for="date">🗓️ Select Date:</label>
+      <input type="date" id="date" />
+    </div>
+
+    <h2>STL Bukidnon Results</h2>
+    <div class="results" id="stl-results">
+      <div class="result-item" id="stl-1030"><strong>10:30 AM</strong> → Pending...</div>
+      <div class="result-item" id="stl-3pm"><strong>3:00 PM</strong> → Pending...</div>
+      <div class="result-item" id="stl-8pm"><strong>8:00 PM</strong> → Pending...</div>
+    </div>
+
+    <h2>3D National Results</h2>
+    <div class="results" id="3d-results">
+      <div class="result-item" id="3d-2pm"><strong>2:00 PM</strong> → Pending...</div>
+      <div class="result-item" id="3d-5pm"><strong>5:00 PM</strong> → Pending...</div>
+      <div class="result-item" id="3d-9pm"><strong>9:00 PM</strong> → Pending...</div>
+    </div>
+
+    <div class="generator">
+      <h2>🎰 Lucky 3 Digit Generator</h2>
+      <div class="number-box">
+        <div class="digit" id="digit1">-</div>
+        <div class="digit" id="digit2">-</div>
+        <div class="digit" id="digit3">-</div>
+      </div>
+      <button onclick="generateLuckyNumbers()">Generate</button>
+
+      <p class="note">
+        Note: <i>The numbers generated here are purely random and are not official results from the PCSO or any of its agencies. 
+        This feature is for entertainment purposes only and does not guarantee any winning combinations.</i>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const JSON_URL = "https://curlybracer.github.io/3D-STL-Results/results.json"; // 👉 palitan kung iba yung filename mo
+
+    // ✅ Auto-set today's date
+    const dateInput = document.getElementById("date");
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    dateInput.value = `${yyyy}-${mm}-${dd}`;
+
+    // ✅ Lucky 3 Generator with Rolling Effect
+    function generateLuckyNumbers() {
+      const digits = [digit1, digit2, digit3];
+      digits.forEach((digit, index) => {
+        let count = 0;
+        const interval = setInterval(() => {
+          digit.textContent = Math.floor(Math.random() * 10);
+          count++;
+          if (count > 15 + index * 5) {
+            clearInterval(interval);
+            digit.textContent = Math.floor(Math.random() * 10);
+          }
+        }, 100);
+      });
+    }
+
+    // ✅ Fetch results from grouped JSON
+    async function fetchResults(date) {
+      try {
+        const response = await fetch(`${JSON_URL}?t=${new Date().getTime()}`);
+        const data = await response.json();
+
+        // Default values
+        const resultsMap = {
+          "stl-1030": "<strong>10:30 AM</strong> → Pending...",
+          "stl-3pm": "<strong>3:00 PM</strong> → Pending...",
+          "stl-8pm": "<strong>8:00 PM</strong> → Pending...",
+          "3d-2pm": "<strong>2:00 PM</strong> → Pending...",
+          "3d-5pm": "<strong>5:00 PM</strong> → Pending...",
+          "3d-9pm": "<strong>9:00 PM</strong> → Pending..."
+        };
+
+        // ✅ Check if may data sa date na yan
+        if (data[date]) {
+          const stl = data[date]["STL"] || {};
+          const threeD = data[date]["3D"] || {};
+
+          if (stl["10:30 AM"]) resultsMap["stl-1030"] = `<strong>10:30 AM</strong> → ${stl["10:30 AM"]}`;
+          if (stl["3:00 PM"]) resultsMap["stl-3pm"] = `<strong>3:00 PM</strong> → ${stl["3:00 PM"]}`;
+          if (stl["8:00 PM"]) resultsMap["stl-8pm"] = `<strong>8:00 PM</strong> → ${stl["8:00 PM"]}`;
+
+          if (threeD["2:00 PM"]) resultsMap["3d-2pm"] = `<strong>2:00 PM</strong> → ${threeD["2:00 PM"]}`;
+          if (threeD["5:00 PM"]) resultsMap["3d-5pm"] = `<strong>5:00 PM</strong> → ${threeD["5:00 PM"]}`;
+          if (threeD["9:00 PM"]) resultsMap["3d-9pm"] = `<strong>9:00 PM</strong> → ${threeD["9:00 PM"]}`;
+        }
+
+        // Apply results
+        Object.keys(resultsMap).forEach(id => {
+          document.getElementById(id).innerHTML = resultsMap[id];
+        });
+
+      } catch (err) {
+        console.error("Error fetching results:", err);
+      }
+    }
+
+    // ✅ Initial load
+    fetchResults(dateInput.value);
+
+    // ✅ Change when date selected
+    dateInput.addEventListener("change", function() {
+      fetchResults(this.value);
+    });
+  </script>
+</body>
+</html>
