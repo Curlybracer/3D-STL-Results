@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- PWA manifest and icons -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#004aad">
   <link rel="apple-touch-icon" href="Appicon.png">
@@ -15,71 +16,7 @@
       margin: 0;
       padding: 0;
       text-align: center;
-    }
-
-    /* ✅ Loading screen */
-    #loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: url("loading-bg.jpg") no-repeat center center;
-      background-size: cover;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      opacity: 1;
-      transition: opacity 1s ease-out;
-    }
-
-    /* ✅ Dark overlay */
-    #loading-screen::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      z-index: -1;
-    }
-
-    /* ✅ Fade out animation */
-    #loading-screen.fade-out {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #loading-screen .spinner {
-      border: 6px solid rgba(255, 255, 255, 0.3);
-      border-top: 6px solid #fff;
-      border-radius: 50%;
-      width: 70px;
-      height: 70px;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    #loading-screen .loading-text {
-      color: #fff;
-      font-size: 1.4rem;
-      font-weight: bold;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
-    }
-
-    #loading-screen .credit {
-      margin-top: 25px;
-      font-size: 1rem;
-      color: #ddd;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+      background: #f50000;
     }
 
     header {
@@ -178,14 +115,66 @@
       color: #444;
       text-align: justify;
     }
+
+    /* ✅ Loading screen */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("loading-bg.jpg") no-repeat center center;
+      background-size: cover;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .spinner {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #004aad;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: white;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    }
+
+    .loading-dev {
+      color: white;
+      font-size: 1rem;
+      position: absolute;
+      bottom: 20px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    }
+
+    .fade-out {
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
   </style>
 </head>
 <body>
-  <!-- ✅ Loading screen -->
+  <!-- ✅ Loading Screen -->
   <div id="loading-screen">
     <div class="spinner"></div>
     <div class="loading-text">Loading Lotto Results...</div>
-    <div class="credit">By Reven</div>
+    <div class="loading-dev">By Reven</div>
   </div>
 
   <header>
@@ -232,6 +221,10 @@
   <script>
     const JSON_URL = "https://curlybracer.github.io/3D-STL-Results/results.json";
 
+    // ⏳ Start timer for loading screen
+    window.loadingStartTime = Date.now();
+
+    // ✅ Auto-set today's date
     const dateInput = document.getElementById("date");
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -239,6 +232,7 @@
     const dd = String(today.getDate()).padStart(2, '0');
     dateInput.value = `${yyyy}-${mm}-${dd}`;
 
+    // ✅ Lucky 3 Generator with Rolling Effect
     function generateLuckyNumbers() {
       const digits = [digit1, digit2, digit3];
       digits.forEach((digit, index) => {
@@ -254,6 +248,7 @@
       });
     }
 
+    // ✅ Fetch results from grouped JSON
     async function fetchResults(date) {
       try {
         const response = await fetch(`${JSON_URL}?t=${new Date().getTime()}`);
@@ -288,19 +283,30 @@
       } catch (err) {
         console.error("Error fetching results:", err);
       } finally {
-        // ✅ Fade out loading screen
         const loadingScreen = document.getElementById("loading-screen");
-        loadingScreen.classList.add("fade-out");
-        setTimeout(() => { loadingScreen.style.display = "none"; }, 1000);
+        const minLoadingTime = 10000; // 10 seconds
+        const startTime = window.loadingStartTime || Date.now();
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, minLoadingTime - elapsed);
+
+        setTimeout(() => {
+          loadingScreen.classList.add("fade-out");
+          setTimeout(() => {
+            loadingScreen.style.display = "none";
+          }, 1000);
+        }, remaining);
       }
     }
 
+    // ✅ Initial load
     fetchResults(dateInput.value);
 
+    // ✅ Change when date selected
     dateInput.addEventListener("change", function() {
       fetchResults(this.value);
     });
 
+    // ✅ Register service worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js")
         .then(() => console.log("Service Worker registered"))
@@ -308,4 +314,4 @@
     }
   </script>
 </body>
-</html>
+  </html>
