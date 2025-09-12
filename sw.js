@@ -1,51 +1,40 @@
-const CACHE_NAME = "lotto-app-v3"; 
-const ASSETS_TO_CACHE = [
-  "/", 
+const CACHE_NAME = "lotto-app-v5"; // 🔄 increment version para mag-refresh cache
+const urlsToCache = [
+  "/",
   "/index.html",
-  "/manifest.json",
+  "/loading-bg.jpg",   // ✅ Loading screen background
   "/Appicon.png",
   "/pcsologo.png",
-  "/loading-bg.jpg",
-  "/results.json" // ✅ para sa offline results
+  "/manifest.json",
+  "/results.json"
 ];
 
-// Install event - cache files
-self.addEventListener("install", (event) => {
+// ✅ Install event → cache lahat ng files
+self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(urlsToCache);
     })
   );
 });
 
-// Activate event - clear old cache
-self.addEventListener("activate", (event) => {
+// ✅ Activate event → tanggalin luma na cache
+self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then((keys) => {
+    caches.keys().then(cacheNames => {
       return Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
+        cacheNames.filter(name => name !== CACHE_NAME)
+                  .map(name => caches.delete(name))
       );
     })
   );
 });
 
-// Fetch event - serve cached files if available
-self.addEventListener("fetch", (event) => {
+// ✅ Fetch event → serve cached files kapag offline
+self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // Gamitin yung cached JSON kung offline
-      return cachedResponse || fetch(event.request).then((response) => {
-        // Optional: i-update yung cache ng results.json kapag online
-        if (event.request.url.includes("results.json")) {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return response;
-      });
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
     })
   );
 });
