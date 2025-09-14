@@ -16,7 +16,7 @@
       margin: 0;
       padding: 0;
       text-align: center;
-      background: #f50000;
+      background: #f1f1f1;
     }
 
     header {
@@ -174,16 +174,9 @@
       display: flex;
       justify-content: center;
       margin-bottom: 8px;
+      margin-right: 3px;
     }
     
-    .combination-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* dalawang column */
-  gap: 10px;
-  max-width: 400px;  /* parehas sa padikit grid size */
-  margin: 0 auto;    /* ito yung magce-center */
-}
-
     .number-grid-2 {
       display: grid;
       grid-template-columns: repeat(8, 1fr);
@@ -219,7 +212,6 @@
       grid-template-columns: repeat(8, 1fr);
       gap: 1px;
       background-color: black;
-      margin: 3px 0;
       border: 1.5px solid black;
     }
 
@@ -407,7 +399,7 @@
         console.error("Error fetching results:", err);
       } finally {
         const loadingScreen = document.getElementById("loading-screen");
-        const minLoadingTime = 10000; // 10 seconds
+        const minLoadingTime = 3000; // 10 seconds
         const startTime = window.loadingStartTime || Date.now();
         const elapsed = Date.now() - startTime;
         const remaining = Math.max(0, minLoadingTime - elapsed);
